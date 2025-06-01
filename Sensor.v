@@ -1,5 +1,5 @@
 module Sensor(input clk,input sensor,output reg [7:0] JA,output reg [6:0] led);
-reg [1:0] filtro;
+reg [1:0] filter;
 reg [31:0] CR,CG,CB,CC,A,Az,R,V,N,B;
 reg [0:0] final,final2;
 
@@ -12,7 +12,7 @@ S2 = JA3 - D17
 S3 = JA9 - D18
 */
 
-function [31:0] abs;
+function [31:0] abs;	//Comnputing the absolute value
 	input [31:0] a,b;
 	begin
 	if(a<b)
@@ -22,7 +22,7 @@ function [31:0] abs;
 	end
 endfunction
 
-function [0:0] menor;
+function [0:0] menor;		// Determining if the first value is the lowest of all values
 	input [31:0] a,b,c,d,e,f;
 	begin
 	if((a<b)&(a<c)&(a<d)&(a<e)&(a<f))
@@ -44,7 +44,7 @@ initial
 	led=6'd0;
 	final=1'b0;
 	final2=1'b0;
-	filtro = 2'b00;
+	filter = 2'b00;
 	CR =0;
 	CG =0;
 	CB =0;
@@ -69,25 +69,25 @@ always @ (posedge clk)
 		end
 	else
 		begin
-		case(filtro)
+		case(filter)
 		2'b00:
 			begin
-			JA= 8'b00010001;
+			JA= 8'b00010001;//Red filter
 			CR = CR +1'b1;			
 			end
 		2'b01:
 			begin
-			JA= 8'b01010001;//Filtro Azul
+			JA= 8'b01010001;//Blue filter
 			CB = CB +1'b1;
 			end
 		2'b10:
 			begin
-			JA= 8'b00010101; //Sin Filtro.
+			JA= 8'b00010101; //No filter
 			CC = CC +1'b1; 
 			end
 		2'b11:
 			begin
-			JA= 8'b01010101; //Filtro Verde.
+			JA= 8'b01010101; //Green filter
 			CG = CG +1'b1;
 			end
 	endcase
@@ -95,20 +95,20 @@ always @ (posedge clk)
 		
 	
 
-always @(posedge sensor)
-	if(filtro < 2'b11)
+always @(posedge sensor)	// Cycle through all camera filters to find the most prob. color
+	if(filter < 2'b11)
 		begin
 		final=1'b0;
-		filtro =filtro + 2'b01;
+		filter =filter + 2'b01;
 		end
 	else
 		begin
-		filtro=2'b00;
+		filter=2'b00;
 		final=1'b1;
 		end
 
 
-always @ (posedge final)
+always @ (posedge final)	//At the end of the four filters cycle the most likely color is displayed on the leds 
 	begin
 	//amarillo,azul,rojo,verde,naranja,blanco.
 	suma= CR+CG+CB+CC;

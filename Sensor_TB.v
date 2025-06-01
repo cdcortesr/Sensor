@@ -6,8 +6,8 @@ module Sensor_TB;
 parameter tck              = 10;       // clock period in ns
 parameter clk_freq = 1000000000 / tck; // Frequenzy in HZ
 
-	reg 	reset; //entrada
-	reg 	clk; //entrada
+	reg 	reset; //input
+	reg 	clk; //input
 	reg	Sensor;
 
 	Sensor s1(clk,Sensor);
@@ -43,7 +43,7 @@ parameter clk_freq = 1000000000 / tck; // Frequenzy in HZ
 	#32 Sensor = 0;
 */
 
-	#(tck*200)$finish; //tiempo simulación
+	#(tck*200)$finish; //Sim time
 	end
 
 endmodule
